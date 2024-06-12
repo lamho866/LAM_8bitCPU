@@ -1,11 +1,11 @@
 module ALU (
-    input       [7:0]    r0_data,
-    input       [7:0]    r1_data,
-    input       [6:0]    ALU_OP,
-    output      reg      B_PCSrc,
-    output   reg[7:0]    o_data
+    input       [7:0]       r0_data,
+    input       [7:0]       r1_data,
+    input       [6:0]       ALU_OP,
+    output      reg         B_PCSrc,
+    output      reg[7:0]    o_data
 );
- `include "constant.vh"
+`include "constant.vh"
 //ALU_OP
 // 6:4 | 3:2 | 1:0|
 //-----------------------

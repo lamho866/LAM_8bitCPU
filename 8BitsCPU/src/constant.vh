@@ -1,6 +1,5 @@
-
-`ifndef FUN_CODE
-    `define FUN_CODE
+//`ifndef FUN_CODE
+//    `define FUN_CODE
     parameter ALU_CAL       = 3'b000;  
     parameter ALU_IMM       = 3'b001; 
     parameter BRANCH        = 3'b010;
@@ -8,11 +7,11 @@
     parameter DM_FUN        = 3'b100;
 
     parameter ILLEGAL_FUN   = 3'b111;
-`endif
+//`endif
 
 
-`ifndef ALU_CAL_CODE
-    `define ALU_CAL_CODE
+//`ifndef ALU_CAL_CODE
+//    `define ALU_CAL_CODE
     parameter NUM_CAL       = 2'b00; 
     parameter BIN_CAL       = 2'b01; 
     parameter BIM_SHIFT     = 2'b10;
@@ -32,30 +31,30 @@
     //BIN_SHIFT_IMM
     parameter SLLI = 2'b00;
     parameter SRLI = 2'b01;
-`endif
+//`endif
 
-`ifndef ALU_IMM_CODE
-    `define ALU_IMM_CODE
+//`ifndef ALU_IMM_CODE
+//    `define ALU_IMM_CODE
     parameter ANDI  = 2'b00; 
     parameter ORI   = 2'b01; 
     parameter XORI  = 2'b10;
     parameter ADDI  = 2'b11; 
-`endif
+//`endif
 
-`ifndef BRANCH_CODE
-    `define BRANCH_CODE
+//`ifndef BRANCH_CODE
+//    `define BRANCH_CODE
     parameter BEQ  = 2'b00; 
     parameter BLT  = 2'b01; 
     parameter BNE  = 2'b10;
-`endif
+//`endif
 
-`ifndef JUMP_CODE
-    `define JUMP_CODE
+//`ifndef JUMP_CODE
+//    `define JUMP_CODE
     parameter JAL  = 2'b00; 
-`endif
+//`endif
 
-`ifndef DM_CODE
-    `define DM_CODE
+//`ifndef DM_CODE
+//    `define DM_CODE
     parameter LD  = 2'b00; 
     parameter SD  = 2'b01; 
-`endif
+//`endif
