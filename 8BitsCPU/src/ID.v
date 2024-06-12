@@ -13,11 +13,11 @@ module ID(
     output             DM_r_en,
     output             is_jal
 );
- `include "constant.vh"
+`include "constant.vh"
 reg [2:0] cur_inst;
 assign ALU_OP = {inst[15:11], inst[1:0]};
-
 //o_addr_0
+
 always @(*) begin
     case(inst[15:13])
         ALU_CAL    : cur_inst <= ALU_CAL    ;  
