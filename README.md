@@ -5,7 +5,7 @@
 
 ### 查看waveform
 ```bash=
-GTKWave CPU.vcd
+gtkwave CPU.vcd
 ```
 ## ISA
 ![alt text](img/ISA.JPG)
