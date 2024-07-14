@@ -1,5 +1,4 @@
 # LAM_8bitCPU
-這是參考了RISC-V架構設計
 
 使用Vivado 執行
 
