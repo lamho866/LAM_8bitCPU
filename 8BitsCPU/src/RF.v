@@ -13,7 +13,7 @@ module RF(
 integer i;
 
 parameter RF_Deep = 8;
-reg [15:0] reg_file [RF_Deep - 1:0];
+reg [7:0] reg_file [RF_Deep - 1:0];
 
 assign o_r_data_0 = reg_file[r_addr_0];
 assign o_r_data_1 = reg_file[r_addr_1];
