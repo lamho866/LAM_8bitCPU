@@ -1,4 +1,6 @@
 `timescale 1ns/1ps
+    module tb_rf;
+
     logic               clk;
     logic               rst;
     logic               RF_w_en;
@@ -11,8 +13,7 @@
 
     int RF_Val[8];
     logic finalRes;
-    
-    module tb_rf;
+
     RF uut(
         clk,
         rst,
@@ -24,7 +25,7 @@
         o_r_data_0,
         o_r_data_1
     );
-
+    
     initial clk = 1;
     always #5 clk = ~clk;
 
