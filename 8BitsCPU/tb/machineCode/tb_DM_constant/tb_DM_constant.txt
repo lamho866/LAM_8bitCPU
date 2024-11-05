@@ -1,0 +1,12 @@
+addi, r1, r0, 3
+addi, r2, r0, 5
+addi, r3, r0, 7
+addi, r4, r0, 9
+addi, r5, r0, 12
+sd, r1, 3(r4) #r4 + 3 = 9 + 3 = 12
+sd, r2, 5(r4) #r4 + 5 = 9 + 5 = 14
+sd, r3, 7(r4) #r4 + 7 = 9 + 7 = 16
+ld, r3, 0(r5)
+ld, r2, 2(r5)
+ld, r1, 4(r5)
+end

@@ -14,7 +14,16 @@ module ID(
     output             is_jal
 );
 `include "constant.vh"
+
 reg [2:0] cur_inst;
+wire isBRANCH, isBRANCH_JUMP, isVal_ALU_CAL, isVal_DMOP;
+
+assign isBRANCH = (cur_inst == BRANCH) && (inst[12:11] != 2'b11);
+assign isBRANCH_JUMP = (cur_inst == BRANCH_JUMP) && (inst[12:11] == 2'b00);
+
+assign isVal_ALU_CAL = (cur_inst == ALU_CAL) && (inst[1:0] != 2'b11) && ({inst[12:11],inst[1:0]} != {BIM_SHIFT, 2'b10}) && ({inst[12:11],inst[1:0]} != {BIN_SHIFT_IMM, 2'b10});
+assign isVal_DMOP = (cur_inst == DM_FUN ) && ((inst[12:11] == LD) || (inst[12:11] == SD));
+
 assign ALU_OP = {inst[15:11], inst[1:0]};
 //o_addr_0
 
@@ -29,46 +38,46 @@ always @(*) begin
     endcase
 end
 
-assign o_addr_0 = ( cur_inst == ALU_CAL     |
+assign o_addr_0 = ( isVal_ALU_CAL     |
                     cur_inst == ALU_IMM     |
-                    cur_inst == BRANCH      |
-                    cur_inst == BRANCH_JUMP 
+                    isBRANCH    |
+                    isVal_DMOP
                     )? inst[7:5] : 0;
 
 //o_addr_1
-assign o_addr_1 = ((cur_inst == ALU_CAL & (inst[12:11]!= BIN_SHIFT_IMM)) | 
-                    cur_inst == BRANCH |
-                    cur_inst == DM_FUN & (inst[12:11] == SD)
+assign o_addr_1 = ((isVal_ALU_CAL & (inst[12:11]!= BIN_SHIFT_IMM)) | 
+                    isBRANCH |
+                    (cur_inst == DM_FUN & (inst[12:11] == SD))
                     )? inst[4:2] : 0;
 
-assign o_w_addr = ( cur_inst == ALU_CAL | 
+assign o_w_addr = ( isVal_ALU_CAL | 
                     cur_inst == ALU_IMM | 
-                    cur_inst == BRANCH_JUMP | 
+                    isBRANCH_JUMP | 
                     cur_inst == DM_FUN & (inst[12:11] == LD))? 
                     inst[10:8] : 0;
 
 //imm part
-assign imm =(cur_inst == ALU_CAL & (inst[12:11] == BIN_SHIFT_IMM))? {5'b00000 ,inst[4:2]} : 
+assign imm =(isVal_ALU_CAL & (inst[12:11] == BIN_SHIFT_IMM))? {5'b00000 ,inst[4:2]} : 
             (cur_inst == ALU_IMM )?      {3'b000, inst[ 4:0]}:
-            (cur_inst == BRANCH )?       {3'b000, inst[10:8], inst[ 1:0]}:
-            (cur_inst == BRANCH_JUMP )?  inst[ 7:0]:
-            (cur_inst == DM_FUN & (inst[12:11] == LD))? inst[ 7:0]:
-            (cur_inst == DM_FUN & (inst[12:11] == SD))? {inst[10:5], inst[1:0]}:
+            (isBRANCH )?       (inst[10] == 1? {3'b111, inst[10:8], inst[ 1:0]} : {3'b000, inst[10:8], inst[ 1:0]}): //consider with 2's complement
+            (isBRANCH_JUMP )?  {inst[7:0]}:
+            (cur_inst == DM_FUN & (inst[12:11] == LD))? {3'b000, inst[4:0]}:
+            (cur_inst == DM_FUN & (inst[12:11] == SD))? {3'b000, inst[10:8], inst[1:0]}:
             0;
 //RF_w_en
-assign RF_w_en = (  cur_inst == ALU_CAL| 
+assign RF_w_en = (  isVal_ALU_CAL| 
                     cur_inst == ALU_IMM |
-                    cur_inst == BRANCH_JUMP|
+                    isBRANCH_JUMP|
                     (cur_inst == DM_FUN & inst[12:11] == LD));
 //ALUSrc
-assign ALUSrc = (cur_inst == ALU_CAL)? (inst[12:11] == BIN_SHIFT_IMM) :
+assign ALUSrc = (isVal_ALU_CAL)? (inst[12:11] == BIN_SHIFT_IMM) :
                 (cur_inst == ALU_IMM)? 1:
                 0;
 
-assign Branch   = (cur_inst == BRANCH | cur_inst == BRANCH_JUMP);
+assign Branch   = (isBRANCH | isBRANCH_JUMP);
 assign Mem2Reg  = (cur_inst == DM_FUN & inst[12:11] == LD);
 assign DM_w_en  = (cur_inst == DM_FUN & inst[12:11] == SD);
 assign DM_r_en  = (cur_inst == DM_FUN & inst[12:11] == LD);
-assign is_jal   = (cur_inst == BRANCH_JUMP);
+assign is_jal   = (isBRANCH_JUMP);
 endmodule
 
