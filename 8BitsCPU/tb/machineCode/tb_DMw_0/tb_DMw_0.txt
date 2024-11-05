@@ -1,0 +1,12 @@
+addi, r2, r0, 15 # r2 = 0x0F
+slli, r2, r2, 4  # r2 = 0xF0
+addi, r2, r2, 14 # r2 = 0xFE
+add, r3, r0, r2  # r3 = 0xFE
+addi, r3, r3, 1  # r3 = 0xFF
+blt, r2, r1, 8  # r2 < r1, PC + 16
+sd, r1, 0(r1)
+addi, r1, r1, 1
+jal, r0, -6
+sd, r3, 0(r0) # DM[0] = 0xFF
+sd, r3, 0(r1) # DM[255] = 0xFF
+end

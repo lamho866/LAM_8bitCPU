@@ -2,12 +2,14 @@ module RF(
     input                   clk,
     input                   rst,
     input                   RF_w_en,
-    input       [2:0]    r_addr_0,
-    input       [2:0]    r_addr_1,
-    input       [2:0]    w_addr,
-    input       [7:0]    w_data,
-    output      [7:0]    o_r_data_0,
-    output      [7:0]    o_r_data_1
+    input       [2:0]       i_CPU_RF_addr,
+    input       [2:0]       r_addr_0,
+    input       [2:0]       r_addr_1,
+    input       [2:0]       w_addr,
+    input       [7:0]       w_data,
+    output      [7:0]       o_CPU_RF_data,
+    output      [7:0]       o_r_data_0,
+    output      [7:0]       o_r_data_1
 ); 
 
 integer i;
@@ -15,8 +17,11 @@ integer i;
 parameter RF_Deep = 8;
 reg [7:0] reg_file [RF_Deep - 1:0];
 
+assign o_CPU_RF_data  = reg_file[i_CPU_RF_addr];
+
 assign o_r_data_0 = reg_file[r_addr_0];
 assign o_r_data_1 = reg_file[r_addr_1];
+
 
 always @(posedge clk or posedge rst) begin
     if(rst) begin

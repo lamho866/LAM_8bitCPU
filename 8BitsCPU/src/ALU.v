@@ -25,26 +25,34 @@ always @(*) begin
                         SUB: o_data <= r0_data - r1_data;
                         MUL: o_data <= r0_data * r1_data;
                         default:
-                           begin end
+                            begin 
+                                o_data <= 0;
+                            end
                         endcase
                 BIN_CAL:case(ALU_OP[1:0])
                         AND: o_data <= r0_data & r1_data;
                         OR : o_data <= r0_data | r1_data;
                         XOR: o_data <= r0_data ^ r1_data;
                         default:
-                            begin end                
+                            begin
+                                o_data <= 0;
+                            end                
                         endcase
                 BIM_SHIFT:case(ALU_OP[1:0])
                         SLL: o_data <= r0_data << r1_data;
                         SRL: o_data <= r0_data >> r1_data;
                         default:
-                            begin end                    
+                            begin
+                                o_data <= 0;
+                            end                    
                         endcase
                 BIN_SHIFT_IMM:case(ALU_OP[1:0])
                         SLLI: o_data <= r0_data << r1_data;
                         SRLI: o_data <= r0_data >> r1_data;
                         default:
-                            begin end    
+                            begin
+                                o_data <= 0;
+                            end    
                         endcase
                 endcase
         ALU_IMM:case(ALU_OP[3:2])
@@ -52,6 +60,8 @@ always @(*) begin
                     ORI : o_data <= r0_data | r1_data;
                     XORI: o_data <= r0_data ^ r1_data;
                     ADDI: o_data <= r0_data + r1_data;
+                    default:
+                        o_data <= 0;
                 endcase
         BRANCH: case(ALU_OP[3:2])
                     BEQ: B_PCSrc <= (r0_data == r1_data);
@@ -67,6 +77,8 @@ always @(*) begin
                     endcase    
         default:
             begin
+                o_data <= 0;
+                B_PCSrc <= 0;
             end
     endcase
 end

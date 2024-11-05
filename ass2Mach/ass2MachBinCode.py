@@ -1,24 +1,27 @@
+import re
+import sys
+
 fun15_11 = {
-    'ADD'   :'000_00',
-    'SUB'   :'000_00',
-    'MUL'   :'000_00',
-    'AND'   :'000_01',
-    'OR'    :'000_01',
-    'XOR'   :'000_01',
-    'SLL'   :'000_10',
-    'SRL'   :'000_10',
-    'SLLI'  :'000_11',
-    'SRLI'  :'000_11',
-    'ANDI'  :'001_00',
-    'ORI'   :'001_01',
-    'XORI'  :'001_10',
-    'ADDI'  :'001_11',
-    'BEQ'   :'010_00',
-    'BLT'   :'010_01',
-    'BNE'   :'010_10',
-    'JAL'   :'011_00',
-    'LD'    :'100_00',
-    'SD'    :'100_01',
+    'ADD'   :'00000',
+    'SUB'   :'00000',
+    'MUL'   :'00000',
+    'AND'   :'00001',
+    'OR'    :'00001',
+    'XOR'   :'00001',
+    'SLL'   :'00010',
+    'SRL'   :'00010',
+    'SLLI'  :'00011',
+    'SRLI'  :'00011',
+    'ANDI'  :'00100',
+    'ORI'   :'00101',
+    'XORI'  :'00110',
+    'ADDI'  :'00111',
+    'BEQ'   :'01000',
+    'BLT'   :'01001',
+    'BNE'   :'01010',
+    'JAL'   :'01100',
+    'LD'    :'10000',
+    'SD'    :'10001',
 }
 
 fun1_0 = {
@@ -48,6 +51,15 @@ def int2bin(num, len):
         return format(num, f'0{len}b')
     return int2NegBin(num, len)
 
+def readOffset_reg_Bin(s):
+    match = re.match(r"(\d+)\((\w+)\)", s)
+    if match:
+        imm = match.group(1)
+        reg = match.group(2)
+    else:
+        print("No match found.")
+    return int2bin(imm, 5), int2bin(reg[1:], 3)
+
 def readAssCode(s):
     s = s.upper()
     s = s.split('#')[0].strip()
@@ -61,32 +73,40 @@ def gp000_format(funName, s_lst):
         r1 = int2bin(s_lst[3][1:], 3)
     else:
         r1 = int2bin(s_lst[3], 3)
-    return f'{fun15_11[funName]}_{rd}_{r0}_{r1}_{fun1_0[funName]}'
+    return f'{fun15_11[funName]}{rd}{r0}{r1}{fun1_0[funName]}'
 
 def gp001_format(funName, s_lst):
     rd  = int2bin(s_lst[1][1:], 3)
     r0  = int2bin(s_lst[2][1:], 3)
     imm = int2bin(s_lst[3], 5)
-    return f'{fun15_11[funName]}_{rd}_{r0}_{imm}'
+    return f'{fun15_11[funName]}{rd}{r0}{imm}'
 
 def gp010_format(funName, s_lst):
+    #branch code
     r0  = int2bin(s_lst[1][1:], 3)
     r1  = int2bin(s_lst[2][1:], 3)
     imm = int2bin(s_lst[3], 5)
-    return f'{fun15_11[funName]}_{imm[0:3]}_{r0}_{r1}_{imm[3:]}'
+    assert imm[4] == '0', 'must input even number'
+    return f'{fun15_11[funName]}{imm[0:3]}{r0}{r1}{imm[3:]}'
 
 def gp011_format(funName, s_lst):
+    #jal
     rd  = int2bin(s_lst[1][1:], 3)
     imm = int2bin(s_lst[2], 8) 
-    return f'{fun15_11[funName]}_{rd}_{imm}'
+    assert imm[7] == '0', 'must input even number'
+    return f'{fun15_11[funName]}{rd}{imm}'
 
 def gp100_format(funName, s_lst):
-    rd  = int2bin(s_lst[1][1:], 3)
-    imm = int2bin(s_lst[2], 8) 
     if funName == 'LD':
-        return f'{fun15_11[funName]}_{rd}_{imm}'
+        rd  = int2bin(s_lst[1][1:], 3)
+        imm, r0 = readOffset_reg_Bin(s_lst[2])
+        return f'{fun15_11[funName]}{rd}{r0}{imm}'
+    
     if funName == 'SD':
-        return f'{fun15_11[funName]}_{imm[0:6]}_{rd}_{imm[6:]}'
+        r1  = int2bin(s_lst[1][1:], 3)
+        imm, r0 = readOffset_reg_Bin(s_lst[2])
+        # print(r1, imm, r0)
+        return f'{fun15_11[funName]}{imm[0:3]}{r0}{r1}{imm[3:]}'
     return ''
 
 # def chnage(s)
@@ -109,11 +129,15 @@ def readCommandFile(ass_file, mach_file):
                 mach_code = gp011_format(funName, s_lst)
             if funName in ['LD', 'SD']:
                 mach_code = gp100_format(funName, s_lst)
-            lineHex = format(lineCnt, '04x')
-            w_file.write(f'inst_mem[16\'h{lineHex}] = 16\'b{mach_code};\n')
+            # lineHex = format(lineCnt, '04x')
+            if funName == 'END':
+                mach_code = f'{"1"*16}'
+            print(mach_code)
+            w_file.write(f'{mach_code}\n')
             lineCnt += 1
     w_file.close()
     print('readCommandFile done!!!')
 
-readCommandFile('tb_ass_mach_code/assCode_tb_ass.txt', 'tb_ass_mach_code/machCode.txt')
+fName = 'tb_RF'
+readCommandFile(f'{fName}.txt', f'{fName}Bin.txt')
 

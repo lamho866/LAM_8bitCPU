@@ -3,14 +3,16 @@ module DM(
     input                   rst,
     input                   DM_w_en,
     input                   DM_r_en,
+    input       [7:0]    i_CPU_DM_addr,
     input       [7:0]    addr,
     input       [7:0]    DM_w_data,
+    output      [7:0]    o_CPU_DM_data,
     output      [7:0]    o_DM_data
 ); 
 
 integer i;
 parameter DM_deep = 256;
-reg [15:0] data_mem [DM_deep - 1:0];
+reg [7:0] data_mem [DM_deep - 1:0];
 
 always @(posedge clk or posedge rst) begin
     if(rst) begin
@@ -21,6 +23,7 @@ always @(posedge clk or posedge rst) begin
     end
 end
 
+assign o_CPU_DM_data = data_mem[i_CPU_DM_addr];
 assign o_DM_data = (DM_r_en)? data_mem[addr] : 0;
 
 endmodule
