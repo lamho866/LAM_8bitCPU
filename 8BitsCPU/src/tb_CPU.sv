@@ -93,13 +93,10 @@ initial begin
     $dumpvars(0, tb_CPU .CPU);
     reset;
     #1;
-    loadFile("tb_MachCode/ass_machCode.txt");
+    loadFile("../tb/machineCode/tb_RF/tb_RFBin.txt");
     // #(cnt *  CLK_PERIOD);
     while(~o_is_done) begin
-        // isReg = 1;
-        // i_cpu_addr = 3;
         #CLK_PERIOD;
-        // $display("r3: %d", o_CPU_data);
     end
     $display("----------------------------------");
     $display("Done: %t, o_is_done Signal:", $time, o_is_done);
